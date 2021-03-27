@@ -2,8 +2,8 @@ import pytest
 
 from caishen_dashboard_be.skeleton import fib, main
 
-__author__ = "Kerem Ataman"
-__copyright__ = "Kerem Ataman"
+__author__ = "Kerem Ataman, Sami Rodrigue"
+__copyright__ = "Kerem Ataman, Sami Rodrigue"
 __license__ = "MIT"
 
 

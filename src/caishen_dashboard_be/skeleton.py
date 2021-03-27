@@ -26,8 +26,8 @@ import sys
 
 from caishen_dashboard_be import __version__
 
-__author__ = "Kerem Ataman"
-__copyright__ = "Kerem Ataman"
+__author__ = "Kerem Ataman, Sami Rodrigue"
+__copyright__ = "Kerem Ataman, Sami Rodrigue"
 __license__ = "MIT"
 
 _logger = logging.getLogger(__name__)

@@ -2,4 +2,4 @@
 Contributors
 ============
 
-* Kerem Ataman <kacorperation@gmail.com>
+* Kerem Ataman, Sami Rodrigue <kacorperation@gmail.com>
