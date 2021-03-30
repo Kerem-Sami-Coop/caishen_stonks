@@ -26,8 +26,10 @@ jobs:
         
     - name: Update pyScaffold structure
       run: |
+        cd ..
         pip install --upgrade pyscaffold
         putup -U caishen-dashboard-be
+        cd .\caishen-dashboard-BE
         
     - name: Lint with flake8
       run: |
