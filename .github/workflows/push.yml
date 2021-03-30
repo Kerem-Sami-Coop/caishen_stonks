@@ -24,14 +24,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r docs/requirements.txt
         
-    - name: Update pyScaffold structure
-      run: |
-        cd ..
-        ls
-        pip install --upgrade pyscaffold
-        putup caishen-dashboard-be -U  --force
-        cd .\caishen-dashboard-be
-        
     - name: Lint with flake8
       run: |
         pip install flake8
