@@ -27,6 +27,7 @@ jobs:
     - name: Update pyScaffold structure
       run: |
         cd ..
+        ls
         pip install --upgrade pyscaffold
         putup caishen-dashboard-BE -U  --force
         cd .\caishen-dashboard-BE
