@@ -29,8 +29,8 @@ jobs:
         cd ..
         ls
         pip install --upgrade pyscaffold
-        putup caishen-dashboard-BE -U  --force
-        cd .\caishen-dashboard-BE
+        putup caishen-dashboard-be -U  --force
+        cd .\caishen-dashboard-be
         
     - name: Lint with flake8
       run: |
