@@ -36,9 +36,8 @@ jobs:
       run: |
         pip install pytest
         pip install pytest-cov
-        pip install pytest-github-actions-annotate-failures
         export PYTHONPATH=src
-        pytest
+        pytest -x
         
     - name: Code coverage with CodeCov
       uses: codecov/codecov-action@v1
