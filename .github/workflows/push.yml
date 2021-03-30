@@ -1,33 +1,44 @@
 #Actions that will activate when code is pushed to a repo, regardless of which repo
-name: CI
+name: Push Actions
 
-# Controls when the action will run. 
-on:
-  # Triggers the workflow on push request
-  push:
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+#runs after each push
+on: [push]
   
 #TODO: Test this mother. Specifically, test how the artifacts are stored
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  #TODO: Create the .yml file necessary for codecov: https://docs.codecov.io/docs/codecov-yaml#repository-yaml
-  CodeCov:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: codecov/codecov-action@v1.3.1
-
-  Linting-pyLint:
-      runs-on: ubuntu-latest
-      steps:
-      - name: GitHub Action for pylint
-        uses: cclauss/GitHub-Action-for-pylint@0.7.0
-        
-  PyTest:
+  build:
     runs-on: ubuntu-latest
     steps:
-      #pytest
-      - name: GitHub Action for pytest
-        uses: cclauss/GitHub-Action-for-pytest@0.5.0
-
+    - uses: actions/checkout@v2
+    - run: |
+        git fetch --prune --unshallow
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r docs/requirements.txt
+        
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Test with pytest
+      run: |
+        pip install pytest
+        export PYTHONPATH=src
+        pytest
+        
+    - name: Code coverage with CodeCov
+      uses: codecov/codecov-action@v1
+      with:
+        fail_ci_if_error: true
