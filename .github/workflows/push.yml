@@ -37,7 +37,7 @@ jobs:
         pip install pytest
         pip install pytest-cov
         export PYTHONPATH=src
-        pytest -x
+        pytest
         
     - name: Code coverage with CodeCov
       uses: codecov/codecov-action@v1
