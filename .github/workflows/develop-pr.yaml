@@ -1,5 +1,9 @@
 name: Pull Request For Develop
-on: [pull_request]
+on: 
+  pull_request:
+    types: [opened, reopened]
+    branches: 
+      - "develop"
 jobs:
   qa:
     name: Quality check
