@@ -1,7 +1,7 @@
 name: Pull Request For Develop
 on: 
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
     branches: 
       - "develop"
 jobs:
