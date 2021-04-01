@@ -1,7 +1,7 @@
 name: Pull Request For Develop
 on: 
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
     branches: 
       - "develop"
 jobs:
@@ -15,14 +15,22 @@ jobs:
         with:
           python-version: 3.8
           architecture: 'x64'
-      - name: Run unit tests
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run linting
+        run: |
+          pip install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Test with pytest
         run: |
           pip install pytest
+          export PYTHONPATH=src
           pytest
-      - name: Wemake Python Stylguide
-        uses: wemake-services/wemake-python-styleguide@0.15.2
-        continue-on-error: true
-        with:
-          reporter: 'github-pr-review'
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IEX_TOKEN: ${{secrets.IEX_TOKEN}}
