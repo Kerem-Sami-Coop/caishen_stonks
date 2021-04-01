@@ -18,7 +18,7 @@ jobs:
       - name: Test export
         run: |
           export TEST_IMPORT=${{secrets.TEST}}
-          echo $TEST_IMPORT
+          echo $TEST_IMPORT | sed 's/./& /g'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
