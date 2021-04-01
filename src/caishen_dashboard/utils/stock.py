@@ -1,5 +1,4 @@
 from iexfinance.stocks import get_historical_data
-import os
 
 
 class StockData:
