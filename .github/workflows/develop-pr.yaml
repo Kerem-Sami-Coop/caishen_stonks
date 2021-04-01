@@ -15,6 +15,10 @@ jobs:
         with:
           python-version: 3.8
           architecture: 'x64'
+      - name: Test export
+        run: |
+          export TEST_IMPORT=${{secrets.TEST}}
+          echo $TEST_IMPORT
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
