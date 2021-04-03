@@ -1,9 +1,9 @@
 from caishen_dashboard.utils.stock import StockData
 
 
-def test_stock_data():
-    init = StockData(stock="AAPL", start="20190101", end="20190103", output_format="pandas")
+def test_stock_retrieval():
+    init = StockData(symbols="AAPL", date_range="1y", interval="1mo")
     data = init.retrieveData()
-    shape = data.shape
-
-    assert shape[0] > 0
+    print(data)
+    assert False
+    # assert shape[0] > 0
