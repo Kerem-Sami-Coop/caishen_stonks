@@ -47,6 +47,6 @@ class StockData:
 
     def retrieveData(self):
         response = requests.request("GET", self.conf["url"], headers=self.conf["headers"],
-                                params=self.conf["querystring"])
+                                    params=self.conf["querystring"])
         data = response.content
         return data
