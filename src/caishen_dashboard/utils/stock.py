@@ -1,4 +1,3 @@
-import requests
 from .errors import InvalidInputError, MissingEnvVarError
 import os
 
@@ -44,9 +43,3 @@ class StockData:
         conf["querystring"] = querystring
 
         return conf
-
-    def retrieveData(self):
-        response = requests.request("GET", self.conf["url"], headers=self.conf["headers"],
-                                    params=self.conf["querystring"])
-        data = response.content
-        return data
