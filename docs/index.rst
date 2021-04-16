@@ -1,8 +1,8 @@
 ====================
-caishen-dashboard-BE
+caishen-dashboard
 ====================
 
-This is the documentation of **caishen-dashboard-BE**.
+This is the documentation of **caishen-dashboard**.
 
 .. note::
 

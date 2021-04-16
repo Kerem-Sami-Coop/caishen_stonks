@@ -1,5 +1,5 @@
 """
-    Setup file for caishen-dashboard-BE.
+    Setup file for caishen-dashboard.
     Use setup.cfg to configure your project.
 
     This file was generated with PyScaffold 4.0.1.

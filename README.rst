@@ -1,5 +1,5 @@
 ====================
-caishen-dashboard-BE
+caishen-dashboard
 ====================
 
 
