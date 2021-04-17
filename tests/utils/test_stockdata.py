@@ -1,12 +1,13 @@
-from caishen_dashboard.utils.stock import StockData
+from caishen_dashboard.utils.stock import StockHistoryRequestBuilder
 import requests
 import requests_mock
 import io
 import os
+import pytest
 
 
-def test_request():
-    details = StockData(symbols="AAPL", date_range="1y", interval="1mo")
+def test_correct_request():
+    details = StockHistoryRequestBuilder(symbols="AAPL", date_range="1y", interval="1mo")
     conf = details.conf
 
     with requests_mock.Mocker() as mock:
@@ -23,3 +24,22 @@ def test_request():
                                     params=conf["querystring"])
 
     assert response.status_code == "200"
+
+
+def test_false_symbol_request():
+    symbols = ",".join(["AAPL"] * 11)
+    with pytest.raises(Exception) as ex:
+        StockHistoryRequestBuilder(symbols=symbols, date_range="10y", interval="1mo")
+    assert "Requested more than 10 stocks" in str(ex.value)
+
+
+def test_false_daterange_request():
+    with pytest.raises(Exception) as ex:
+        StockHistoryRequestBuilder(symbols="AAPL", date_range="10y", interval="1mo")
+    assert "Invalid stock date range" in str(ex.value)
+
+
+def test_false_interval_request():
+    with pytest.raises(Exception) as ex:
+        StockHistoryRequestBuilder(symbols="AAPL", date_range="1y", interval="5mo")
+    assert "Invalid stock interval" in str(ex.value)
