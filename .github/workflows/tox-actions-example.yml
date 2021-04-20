@@ -1,8 +1,9 @@
-name: Python package
-
-on:
-  - push
-  - pull_request
+name: Pull Request For Develop
+on: 
+  pull_request:
+    types: [opened, reopened, synchronize, workflow_dispatch]
+    branches: 
+      - "develop"
 
 jobs:
   build:
@@ -23,7 +24,8 @@ jobs:
       env: 
         RAPID_API_TOKEN: ${{secrets.RAPID_API_TOKEN}}
       # Run tox using the version of Python in `PATH`
-      run: tox -e py
+      #run: tox -e py
+      run: tox
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
