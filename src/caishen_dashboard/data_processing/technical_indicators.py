@@ -82,13 +82,13 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
     if type(lookback) is not int:
-        raise InvalidInputError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
+        raise TypeError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
     if lookback < 0:
-        raise InvalidInputError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
+        raise ValueError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
     if type(smoothing) is not float:
-        raise InvalidInputError("The smoothing value is expected to be a float, but it's type is " + str(smoothing))
+        raise TypeError("The smoothing value is expected to be a float, but it's type is " + str(smoothing))
     if smoothing < 0:
-        raise InvalidInputError("The smoothing value has to be a non negative float, but it is set to " + str(smoothing))
+        raise ValueError("The smoothing value has to be a non negative float, but it is set to " + str(smoothing))
 
     result: List[float] = []
     ema: float = values[0]
