@@ -1,4 +1,4 @@
-from caishen_dashboard.utils.stock import StockHistoryRequestBuilder
+from caishen_dashboard.data_processing.stock import StockHistoryRequestBuilder
 import requests
 import requests_mock
 import io
