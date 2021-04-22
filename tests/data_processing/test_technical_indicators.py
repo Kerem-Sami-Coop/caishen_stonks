@@ -77,9 +77,9 @@ def test_EMA_negative_smoothing():
 
 def test_EMA_calculations():
     values = [1.0,2.0,3.0,4.0,5.0]
-    lookback = 3
+    lookback = 4
     smoothing = 2.0
-    expected_result = [-1.0,-1.0,2.0,3.0,4.0]
+    expected_result = [-1.0,-1.0,-1.0,2.5,3.5]
     output = TI.EMA(values, lookback, smoothing)
     assert output == expected_result
 

@@ -33,9 +33,9 @@ def SMA(values: List[float], lookback: int = 14):
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
     if type(lookback) is not int:
-        raise InvalidInputError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
+        raise TypeError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
     if lookback < 0:
-        raise InvalidInputError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
+        raise ValueError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
 
     result: List[float] = []
 
@@ -75,8 +75,8 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
 
     Example:
         >>> from caishen_dashboard.data_processing.technical_indicators import EMA
-        >>> EMA([1.0,2.0,3.0,4.0,5.0],3,2.0)
-        [-1, -1, 2.0, 3.0, 4.0]
+        >>> EMA([1.0,2.0,3.0,4.0,5.0],4,2.0)
+        [-1, -1, -1, 2.5, 3.5]
     """    
     # Error Checking
     if len(values) == 0:
@@ -134,9 +134,9 @@ def bollinger_bands(values: List[float], lookback: int = 20):
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
     if type(lookback) is not int:
-        raise InvalidInputError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
+        raise TypeError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
     if lookback < 0:
-        raise InvalidInputError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
+        raise ValueError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
 
     middle_band: List[float] = []
     upper_band: List[float] = []
@@ -182,9 +182,9 @@ def fibonacci_retractments(start_price: float, end_price: float, fibonacci_level
     """    
     # Error Checking
     if type(start_price) != float:
-        raise InvalidInputError("The start price is expected to be a float but it is " +str(start_price))
+        raise TypeError("The start price is expected to be a float but it is " +str(start_price))
     if type(end_price) != float:
-        raise InvalidInputError("The end price is expected to be a float but it is " +str(end_price))
+        raise TypeError("The end price is expected to be a float but it is " +str(end_price))
     
     price_difference = abs(end_price - start_price)
     multiplier = 1
