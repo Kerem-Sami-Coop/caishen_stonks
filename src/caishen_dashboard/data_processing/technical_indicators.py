@@ -197,3 +197,37 @@ def fibonacci_retractments(start_price: float, end_price: float, fibonacci_level
         result.append(end_price + multiplier * price_difference * level)
 
     return result
+
+
+def stochastic_oscillator(stock_closing: List[float], lookback: int = 14):
+    """Calculates stochastic oscillator for the provided set of stocks.
+
+    Args:
+        stock_closing (List[float]): A list of stock prices.
+        lookback (int, optional): The number of previous closing stock prices to check.
+    Raises:
+        TypeError: lookback must be integer
+        TypeError: stock_closing must be list
+        TypeError: stock_closing must be list of floats
+
+    Returns:
+        float: The SO score ranging from 0 to 100. A low score (<20) indicates the security is being oversold, meaning
+        the price will likely increase, while a higher score (>80) indicates the security is being overbought, meaning
+        the price will likely decrease.
+
+    Example:
+        >>> from caishen_dashboard.data_processing.technical_indicators import stochastic_oscillator
+        >>> stochastic_oscillator([1.0, 1.5, 1.0, 2.0, 4.0, 0.25, 2.0, 1.75], 3)
+        85.71428...
+    """
+    # Error Checking
+    if type(lookback) != int:
+        raise TypeError("The lookback is expected to be integer but it is " + str(lookback))
+    if type(stock_closing) != list:
+        raise TypeError("The stock_closing is expected to be a list but it is " + str(stock_closing))
+    target_list = stock_closing[-lookback:]
+    if all(isinstance(x, float) for x in target_list):
+        raise TypeError("The provide list of prices are not float")
+
+    score = 100.0 * (target_list[-1] - min(target_list)) / (max(target_list) - min(target_list))
+    return score
