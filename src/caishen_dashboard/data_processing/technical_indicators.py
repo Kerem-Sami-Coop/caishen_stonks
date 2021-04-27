@@ -5,7 +5,7 @@ import statistics
 
 def SMA(values: List[float], lookback: int = 14):
     """Calculates Simple Moving Average (SMA) for a given lookback.
-    
+
     The lookback determines the rolling window for which the averages are taken over. For example,
     lookback = 20 calculates SMA20
 
@@ -28,7 +28,6 @@ def SMA(values: List[float], lookback: int = 14):
         [-1, -1, 2.0, 3.0]
     """
 
-
     # Error Checking
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
@@ -48,9 +47,10 @@ def SMA(values: List[float], lookback: int = 14):
 
     return result
 
+
 def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
     """Calculates Exponential Moving Average (EMA) for a given lookback.
-    
+
     The lookback determines the rolling window for which the averages are taken over. For example,
     lookback = 20 calculates EMA20
 
@@ -77,7 +77,7 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
         >>> from caishen_dashboard.data_processing.technical_indicators import EMA
         >>> EMA([1.0,2.0,3.0,4.0,5.0],4,2.0)
         [-1, -1, -1, 2.5, 3.5]
-    """    
+    """
     # Error Checking
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
@@ -92,7 +92,7 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
 
     result: List[float] = []
     ema: float = values[0]
-    num_values_processed: int = 0
+    # num_values_processed: int = 0
     multiplier: float = smoothing / (1.0*(1 + lookback))
     # calculate EMA for all values except the first lookback # of values
     for i in range(lookback - 1):
@@ -106,6 +106,7 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
         result.append(ema)
 
     return result
+
 
 def bollinger_bands(values: List[float], lookback: int = 20):
     """Calculates upper (avg + 2 * stdev), middle (avg) and lower (avg - 2 * stdev) bollinger bands
@@ -129,7 +130,7 @@ def bollinger_bands(values: List[float], lookback: int = 20):
         >>> bollinger_bands([1, 2, 3, 4, 5], 2)
         [[-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5]]
 
-    """    
+    """
     # Error Checking
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
@@ -155,6 +156,7 @@ def bollinger_bands(values: List[float], lookback: int = 20):
 
     return [lower_band, middle_band, upper_band]
 
+
 def fibonacci_retractments(start_price: float, end_price: float, fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]):
     """Calculates Fibonacci retractment levels for the given start price, end price and fibonacci levels
 
@@ -179,13 +181,13 @@ def fibonacci_retractments(start_price: float, end_price: float, fibonacci_level
         [17.64, 12.14]
         >>> fibonacci_retractments(20.0, 10.0, [0.236,0.786])
         [12.36, 17.86]
-    """    
+    """
     # Error Checking
     if type(start_price) != float:
-        raise TypeError("The start price is expected to be a float but it is " +str(start_price))
+        raise TypeError("The start price is expected to be a float but it is " + str(start_price))
     if type(end_price) != float:
-        raise TypeError("The end price is expected to be a float but it is " +str(end_price))
-    
+        raise TypeError("The end price is expected to be a float but it is " + str(end_price))
+
     price_difference = abs(end_price - start_price)
     multiplier = 1
     if end_price > start_price:
