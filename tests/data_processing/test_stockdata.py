@@ -1,4 +1,5 @@
 from caishen_dashboard.data_processing.stock import StockHistoryRequestBuilder
+from caishen_dashboard.data_processing.utils import DateRange, StockInterval
 import requests
 import requests_mock
 import io
@@ -7,7 +8,9 @@ import pytest
 
 
 def test_correct_request():
-    details = StockHistoryRequestBuilder(tickers="AAPL", date_range="1y", interval="1mo")
+    details = StockHistoryRequestBuilder(tickers=["AAPL"],
+                                         date_range=DateRange.oneYear,
+                                         interval=StockInterval.oneMonth)
     conf = details.conf
 
     with requests_mock.Mocker() as mock:
@@ -26,20 +29,25 @@ def test_correct_request():
     assert response.status_code == "200"
 
 
-def test_false_symbol_request():
-    tickers = ",".join(["AAPL"] * 11)
+def test_false_ticker_request_1():
     with pytest.raises(Exception) as ex:
-        StockHistoryRequestBuilder(tickers=tickers, date_range="10y", interval="1mo")
+        StockHistoryRequestBuilder(tickers=["AAPL"] * 11, date_range=DateRange.oneYear, interval=StockInterval.oneMonth)
     assert "Requested more than 10 stocks" in str(ex.value)
+
+
+def test_false_ticker_request_2():
+    with pytest.raises(Exception) as ex:
+        StockHistoryRequestBuilder(tickers="AAPL", date_range=DateRange.oneYear, interval=StockInterval.oneMonth)
+    assert "Invalid tickers type" in str(ex.value)
 
 
 def test_false_daterange_request():
     with pytest.raises(Exception) as ex:
-        StockHistoryRequestBuilder(tickers="AAPL", date_range="10y", interval="1mo")
-    assert "Invalid date range" in str(ex.value)
+        StockHistoryRequestBuilder(tickers=["AAPL"], date_range="10y", interval="1mo")
+    assert "Invalid date range type" in str(ex.value)
 
 
 def test_false_interval_request():
     with pytest.raises(Exception) as ex:
-        StockHistoryRequestBuilder(tickers="AAPL", date_range="1y", interval="5mo")
-    assert "Invalid interval" in str(ex.value)
+        StockHistoryRequestBuilder(tickers=["AAPL"], date_range=DateRange.oneYear, interval="5mo")
+    assert "Invalid interval type" in str(ex.value)
