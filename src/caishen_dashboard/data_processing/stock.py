@@ -25,13 +25,6 @@ class StockHistoryRequestBuilder:
         InvalidInputError: Invalid date range
         InvalidInputError: Invalid interval
         MissingEnvVarError: If RAPIDAPI_HOST or RAPIDAPI_ENDPOINT are missing
-
-    To use:
-        >>> from caishen_dashboard.data_processing.stock import StockHistoryRequestBuilder
-        >>> request = StockHistoryRequestBuilder(tickers="AAPL,MSFT", date_range="3mo", interval="1d")
-        >>> request.conf.keys()
-        dict_keys(['headers', 'url', 'querystring'])
-
     """
     def __init__(self, tickers: str, date_range: str, interval: str):
         self._validate(tickers, date_range, interval)
