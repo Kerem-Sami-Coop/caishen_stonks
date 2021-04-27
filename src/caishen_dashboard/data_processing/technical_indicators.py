@@ -202,6 +202,8 @@ def fibonacci_retractments(start_price: float, end_price: float, fibonacci_level
 def stochastic_oscillator(stock_closing: List[float], lookback: int = 14):
     """Calculates stochastic oscillator for the provided set of stocks.
 
+    The function assumes that the provided list of stocks are sorted from the oldest to the most recent closing price. 
+
     Args:
         stock_closing (List[float]): A list of stock prices.
         lookback (int, optional): The number of previous closing stock prices to check.
