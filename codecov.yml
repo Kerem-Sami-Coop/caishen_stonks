@@ -4,3 +4,4 @@ comment:
   require_changes: false 
   branches:
     - "develop"
+    - "master"

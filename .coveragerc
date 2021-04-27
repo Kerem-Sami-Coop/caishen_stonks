@@ -30,3 +30,5 @@ omit=
     .venv/*
     tests/*
     setup.py
+    *__init__*
+    errors.py
