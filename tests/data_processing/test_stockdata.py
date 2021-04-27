@@ -1,5 +1,5 @@
 from caishen_dashboard.data_processing.stock import StockHistoryRequestBuilder
-from caishen_dashboard.data_processing.utils import DateRange, StockInterval
+from caishen_dashboard.data_processing.constants import DateRange, StockInterval
 import requests
 import requests_mock
 import io

@@ -1,7 +1,7 @@
 from typing import List
 import os
 from .errors import InvalidInputError, MissingEnvVarError
-from .utils import DateRange, StockInterval
+from .constants import DateRange, StockInterval
 
 
 class StockHistoryRequestBuilder:
