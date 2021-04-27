@@ -22,7 +22,7 @@ class StockHistoryRequestBuilder:
 
     Raises:
         TypeError: Invalid tickers type
-        InvalidInputError: Requested more than 10 stocks
+        InvalidInputError: The requested number of tickers is not between 1 and 10
         TypeError: Invalid date range type
         TypeError: Invalid interval type
         MissingEnvVarError: If RAPIDAPI_HOST or RAPIDAPI_ENDPOINT are missing
@@ -34,8 +34,8 @@ class StockHistoryRequestBuilder:
     def _validate(self, tickers, date_range, interval):
         if not isinstance(tickers, list):
             raise TypeError("Invalid tickers type. Please use a list for tickers")
-        if len(tickers) > 10:
-            raise InvalidInputError("Requested more than 10 stocks")
+        if len(tickers) > 10 or len(tickers) == 0:
+            raise InvalidInputError("The requested number of tickers is not between 1 and 10")
         if not isinstance(date_range, DateRange):
             raise TypeError("Invalid date range type. Please use DateRange class")
         if not isinstance(interval, StockInterval):
