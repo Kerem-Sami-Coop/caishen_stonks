@@ -42,7 +42,7 @@ def SMA(values: List[float], lookback: int = 14):
     for i in range(lookback - 1):
         result.append(-1)
     for i in range(len(values) - lookback + 1):
-        average = sum(values[i:i + lookback]) / (1.0*lookback)
+        average = sum(values[i:i + lookback]) / (1.0 * lookback)
         result.append(average)
 
     return result
@@ -93,13 +93,13 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
     result: List[float] = []
     ema: float = values[0]
     # num_values_processed: int = 0
-    multiplier: float = smoothing / (1.0*(1 + lookback))
+    multiplier: float = smoothing / (1.0 * (1 + lookback))
     # calculate EMA for all values except the first lookback # of values
     for i in range(lookback - 1):
         result.append(-1)
     # The EMA of the first N elements is equal to their average
     if len(values) >= lookback:
-        ema = sum(values[:lookback]) / (1.0*(lookback))
+        ema = sum(values[:lookback]) / (1.0 * (lookback))
         result.append(ema)
     for value in values[lookback:]:
         ema = value * multiplier + ema * (1 - multiplier)
@@ -135,9 +135,11 @@ def bollinger_bands(values: List[float], lookback: int = 20):
     if len(values) == 0:
         raise InvalidInputError("The length of the values list is 0. It should be at least 1")
     if type(lookback) is not int:
-        raise TypeError("The lookback is expected to be an int, but it's type is " + str(type(lookback)))
+        raise TypeError(
+            "The lookback is expected to be an int, but it's type is " + str(type(lookback)))
     if lookback < 0:
-        raise ValueError("The lookback value has to be a non negative integer, but it is set to " + str(lookback))
+        raise ValueError(
+            "The lookback value has to be a non negative integer, but it is set to " + str(lookback))
 
     middle_band: List[float] = []
     upper_band: List[float] = []
@@ -148,7 +150,7 @@ def bollinger_bands(values: List[float], lookback: int = 20):
         upper_band.append(-1)
         lower_band.append(-1)
     for i in range(len(values) - lookback + 1):
-        average = sum(values[i:i + lookback]) / (1.0*lookback)
+        average = sum(values[i:i + lookback]) / (1.0 * lookback)
         stdev = statistics.pstdev(values[i:i + lookback])
         middle_band.append(average)
         upper_band.append(average + 2 * stdev)
@@ -157,13 +159,15 @@ def bollinger_bands(values: List[float], lookback: int = 20):
     return [lower_band, middle_band, upper_band]
 
 
-def fibonacci_retractments(start_price: float, end_price: float, fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]):
+def fibonacci_retractments(
+        start_price: float, end_price: float,
+        fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]):
     """Calculates Fibonacci retractment levels for the given start price, end price and fibonacci levels
 
     Args:
         start_price (float): The starting price - aka the first price in the time range
         end_price (float): The end price - aka the last price in the time range
-        fibonacci_levels (List[float], optional): Set of fibonacci levels to calculate. 
+        fibonacci_levels (List[float], optional): Set of fibonacci levels to calculate.
                                                   The levels are fed as floats, so 0.236 means 23.6%
                                                   Defaults to [0.236, 0.382, 0.5, 0.618, 0.764].
 
