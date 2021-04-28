@@ -47,8 +47,8 @@ app.layout = html.Div([
 def bbands(price, window_size=10, num_of_std=5):
     rolling_mean = price.rolling(window=window_size).mean()
     rolling_std = price.rolling(window=window_size).std()
-    upper_band = rolling_mean + (rolling_std*num_of_std)
-    lower_band = rolling_mean - (rolling_std*num_of_std)
+    upper_band = rolling_mean + (rolling_std * num_of_std)
+    lower_band = rolling_mean - (rolling_std * num_of_std)
     return rolling_mean, upper_band, lower_band
 
 
@@ -84,7 +84,7 @@ def update_graph(tickers):
             bollinger_traces = [{
                 'x': dff['Date'], 'y': y,
                 'type': 'scatter', 'mode': 'lines',
-                'line': {'width': 1, 'color': colorscale[(i*2) % len(colorscale)]},
+                'line': {'width': 1, 'color': colorscale[(i * 2) % len(colorscale)]},
                 'hoverinfo': 'none',
                 'legendgroup': ticker,
                 'showlegend': True if i == 0 else False,

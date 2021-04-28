@@ -1,39 +1,47 @@
-from .errors import InvalidInputError, MissingEnvVarError
+from typing import List
 import os
+from .errors import InvalidInputError, MissingEnvVarError
+from .constants import DateRange, StockInterval
 
 
 class StockHistoryRequestBuilder:
+    """Class to build the request for stock data.
+
+    The class can be used to generate a HTTPS request to retrieve the history of upto 10 stocks from Rapid API's Yahoo
+    Finance Low Latency vendor. The details for the request can be accessed from the conf dictionary created within
+    the class
+
+    Args:
+        tickers (List[str]): String of stock tickers combined with commas. Cannot be more than 10.
+        date_range (enum): The extent of the history to load.
+        interval (enum): The aggregate value for a specific interval of stock(s).
+
+    Attributes:
+        conf (dict): Dictionary that contains the URL, headers and the querystring to generate the request. These
+        information can be accessed from the keys url, headers and querystring
+
+    Raises:
+        TypeError: Invalid tickers type
+        InvalidInputError: The requested number of tickers is not between 1 and 10
+        TypeError: Invalid date range type
+        TypeError: Invalid interval type
+        MissingEnvVarError: If RAPIDAPI_HOST or RAPIDAPI_ENDPOINT are missing
     """
-    Class to build the request for the stock data
+    def __init__(self, tickers: List[str], date_range: DateRange, interval: StockInterval):
+        self._validate(tickers, date_range, interval)
+        self.conf = self._build_conf(tickers, date_range, interval)
 
-    Attributes
-    ----------
-    symbols : str
-        String of combined with commas but less then 10.
-        Ex: AAPL,MSFT
-    date_range : str
-        The range of stock data to load.
-        Expected values "1d", "5d", "3mo", "6mo", "1y", "5y", "max"
-    interval : str
-        Frequency of stock values
-        Expected values "1m", "5m", "15m", "1d", "1wk", "1mo"
-    """
-    def __init__(self, symbols: str, date_range: str, interval: str):
-        self._validate(symbols, date_range, interval)
-        self.symbols = symbols
-        self.date_range = date_range
-        self.interval = interval
-        self.conf = self._build_conf()
+    def _validate(self, tickers, date_range, interval):
+        if not isinstance(tickers, list):
+            raise TypeError("Invalid tickers type. Please use a list for tickers")
+        if len(tickers) > 10 or len(tickers) == 0:
+            raise InvalidInputError("The requested number of tickers is not between 1 and 10")
+        if not isinstance(date_range, DateRange):
+            raise TypeError("Invalid date range type. Please use DateRange class")
+        if not isinstance(interval, StockInterval):
+            raise TypeError("Invalid interval type. Please use StockInterval class")
 
-    def _validate(self, symbols, date_range, interval):
-        if len(symbols.split(",")) > 10:
-            raise InvalidInputError("Requested more than 10 stocks")
-        if date_range not in ["1d", "5d", "3mo", "6mo", "1y", "5y", "max"]:
-            raise InvalidInputError("Invalid stock date range")
-        if interval not in ["1m", "5m", "15m", "1d", "1wk", "1mo"]:
-            raise InvalidInputError("Invalid stock interval")
-
-    def _build_conf(self):
+    def _build_conf(self, tickers, date_range, interval):
         REQUIRED_VARS = ["RAPIDAPI_HOST", "RAPIDAPI_ENDPOINT"]
         ENV_VARS = os.environ.keys()
 
@@ -53,9 +61,9 @@ class StockHistoryRequestBuilder:
         url = f"https://{host}/{endpoint}"
         conf["url"] = url
 
-        querystring = {"symbols": self.symbols,
-                       "range": self.date_range,
-                       "interval": self.interval
+        querystring = {"symbols": ",".join(tickers),
+                       "range": date_range.value,
+                       "interval": interval.value
                        }
         conf["querystring"] = querystring
 
