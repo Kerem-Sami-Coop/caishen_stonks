@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from .errors import InvalidInputError
 import statistics
 
@@ -199,18 +199,18 @@ def fibonacci_retractments(start_price: float, end_price: float, fibonacci_level
     return result
 
 
-def stochastic_oscillator(stock_closing: List[float], lookback: int = 14):
+def stochastic_oscillator(values: List[float], lookback: int = 14):
     """Calculates stochastic oscillator for the provided set of stocks.
 
     The function assumes that the provided list of stocks are sorted from the oldest to the most recent closing price. 
 
     Args:
-        stock_closing (List[float]): A list of stock prices.
+        values (List[float]): A list of stock closing prices.
         lookback (int, optional): The number of previous closing stock prices to check.
     Raises:
         TypeError: lookback must be integer
-        TypeError: stock_closing must be list
-        TypeError: stock_closing must be list of floats
+        TypeError: values must be list
+        TypeError: values must be list of floats
 
     Returns:
         float: The SO score ranging from 0 to 100. A low score (<20) indicates the security is being oversold, meaning
@@ -225,11 +225,91 @@ def stochastic_oscillator(stock_closing: List[float], lookback: int = 14):
     # Error Checking
     if type(lookback) != int:
         raise TypeError("The lookback is expected to be integer but it is " + str(lookback))
-    if type(stock_closing) != list:
-        raise TypeError("The stock_closing is expected to be a list but it is " + str(stock_closing))
-    target_list = stock_closing[-lookback:]
+    if type(values) != list:
+        raise TypeError("The values is expected to be a list but it is " + str(values))
+    target_list = values[-lookback:]
     if all(isinstance(x, float) for x in target_list):
         raise TypeError("The provide list of prices are not float")
 
     score = 100.0 * (target_list[-1] - min(target_list)) / (max(target_list) - min(target_list))
     return score
+
+
+def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), signal_lookback: int = 9):
+    """Calculates Moving Average Convergence Divergence for a stock
+
+    MACD uses different SMAs to identify support and resistance levels. The MACD not only determines whether a trend is up
+    or down, but it the strength of buy and sell signals
+
+    Args:
+        values (List[float]): ---
+        MACD_lookback (Tuple[int, int], optional): ---
+        signal_lookback (int, optional): ----
+    Raises:
+        TypeError: The signal lookback is expected to be integer
+        TypeError: The MACD_lookback is expected to be a tuple
+        TypeError: The signal lookback is expected to be integer
+
+    Returns:
+        Tuple[List(float), List(float), List(float)]: The lists represent the MACD values, the signal values and the
+        histogram used by MACD
+
+    Example: ---
+    """
+    # Error Checking
+    if type(values) != list:
+        raise TypeError("The values is expected to be a list but it is " + str(values))
+    if type(MACD_lookback) != tuple:
+        raise TypeError("The MACD_lookback is expected to be a tuple but it is " + str(MACD_lookback))
+    if type(signal_lookback) != int:
+        raise TypeError("The signal lookback is expected to be integer but it is " + str(signal_lookback))
+
+    MACD_values = EMA(values, MACD_lookback[0]) - EMA(values, MACD_lookback[1])
+    signal_values = EMA(MACD_values, signal_lookback)
+    histogram_values = MACD_values - signal_values
+
+    return MACD_values, signal_values, histogram_values
+
+
+def RSI(values: List[float], lookback: int = 14):
+    """Calculates Relative Strength Index for a stock
+
+    MACD uses different SMAs to identify support and resistance levels. The MACD not only determines whether a trend is up
+    or down, but it the strength of buy and sell signals
+
+    Args:
+        values (List[float]): ---
+        lookback (int, optional): ----
+    Raises:
+        TypeError: The values is expected to be a list
+        TypeError: The lookback is expected to be integer
+
+    Returns:
+        float: The RSI score of a stock
+
+    Example: ---
+    """
+    # Error Checking
+    if type(values) != list:
+        raise TypeError("The values is expected to be a list but it is " + str(values))
+    if type(lookback) != int:
+        raise TypeError("The lookback is expected to be integer but it is " + str(lookback))
+
+    gain: List[float] = [0.0]
+    loss: List[float] = [0.0]
+    previous = values[0]
+    for current in values[1:]:
+        change = current - previous
+        if change >= 0:
+            gain.append(change)
+            loss.append(0.0)
+        else:
+            gain.append(0.0)
+            loss.append(abs(change))
+
+    average_gain = SMA(gain, lookback)
+    average_loss = SMA(loss, lookback)
+    RS = average_gain/average_loss
+    RSI = 100 - 100/(1+RS)
+
+    return RSI
