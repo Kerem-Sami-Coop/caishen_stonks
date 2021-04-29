@@ -159,9 +159,8 @@ def bollinger_bands(values: List[float], lookback: int = 20):
     return [lower_band, middle_band, upper_band]
 
 
-def fibonacci_retractments(
-        start_price: float, end_price: float,
-        fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]):
+def fibonacci_retractments(start_price: float, end_price: float,
+                           fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]):
     """Calculates Fibonacci retractment levels for the given start price, end price and fibonacci levels
 
     Args:
@@ -203,40 +202,48 @@ def fibonacci_retractments(
     return result
 
 
-def stochastic_oscillator(values: List[float], lookback: int = 14):
-    """Calculates stochastic oscillator for the provided set of stocks.
-
-    The function assumes that the provided list of stocks are sorted from the oldest to the most recent closing price. 
+def stochastic_oscillator(high_values: List[float], low_values: List[float], closing_values: List[float],
+                          K_lookback: int = 5, D_lookback: int = 3):
+    """Calculates stochastic oscillator for the provided stock.
 
     Args:
-        values (List[float]): A list of stock closing prices.
-        lookback (int, optional): The number of previous closing stock prices to check.
+        high_values (List[float]): A list of the highest stock value for each day in the last N days.
+        low_values (List[float]): A list of the lowest stock value for each day in the last N days.
+        closing_values (float): The closing prices for the last N days.
+        K_lookback (int, optional): lookback days for the last 5 days.
+        D_lookback (int, optional): lookback days for the last 3 days.
     Raises:
-        TypeError: lookback must be integer
-        TypeError: values must be list
-        TypeError: values must be list of floats
-
+        InvalidInputError: The length of the lists are not matching
+        TypeError: closing_values must be list
+        TypeError: high_values must be list
+        TypeError: low_values must be list
     Returns:
-        float: The SO score ranging from 0 to 100. A low score (<20) indicates the security is being oversold, meaning
-        the price will likely increase, while a higher score (>80) indicates the security is being overbought, meaning
-        the price will likely decrease.
-
+        Tuple(float, float): K score & D score
     Example:
         >>> from caishen_dashboard.data_processing.technical_indicators import stochastic_oscillator
-        >>> stochastic_oscillator([1.0, 1.5, 1.0, 2.0, 4.0, 0.25, 2.0, 1.75], 3)
-        85.71428...
+        >>> stochastic_oscillator([100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0],
+        ...                       [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0],
+        ...                       [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0])
+        (0, 26.9841)
     """
     # Error Checking
-    if type(lookback) != int:
-        raise TypeError("The lookback is expected to be integer but it is " + str(lookback))
-    if type(values) != list:
-        raise TypeError("The values is expected to be a list but it is " + str(values))
-    target_list = values[-lookback:]
-    if all(isinstance(x, float) for x in target_list):
-        raise TypeError("The provide list of prices are not float")
+    if type(closing_values) != list:
+        raise TypeError("The closing_values is expected to be a list")
+    if type(high_values) != list:
+        raise TypeError("The high_values is expected to be a list")
+    if type(low_values) != list:
+        raise TypeError("The low_values is expected to be a list")
+    if (len(high_values) != len(low_values)) or (len(high_values) != len(closing_values)):
+        raise InvalidInputError("The length of values are mismatching")
 
-    score = 100.0 * (target_list[-1] - min(target_list)) / (max(target_list) - min(target_list))
-    return score
+    D_list = []
+    for start, close in enumerate(closing_values[K_lookback:]):
+        highest = max(high_values[start:start + K_lookback])
+        lowest = max(low_values[start:start + K_lookback])
+        K_score = 100.0 * (close - lowest) / (highest - lowest)
+        D_list.append(K_score)
+    D_score = 100.0 * max(D_list[-D_lookback:]) / max(D_list[-D_lookback:])
+    return K_score, D_score
 
 
 def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), signal_lookback: int = 9):
