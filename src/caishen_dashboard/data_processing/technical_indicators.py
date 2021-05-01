@@ -202,8 +202,8 @@ def fibonacci_retractments(start_price: float, end_price: float,
     return result
 
 
-def stochastic_oscillator(high_values: List[float], low_values: List[float], closing_values: List[float],
-                          K_lookback: int = 5, D_lookback: int = 3):
+def SO(high_values: List[float], low_values: List[float], closing_values: List[float], K_lookback: int = 5,
+       D_lookback: int = 3):
     """Calculates stochastic oscillator for the provided stock.
 
     Args:
@@ -217,6 +217,8 @@ def stochastic_oscillator(high_values: List[float], low_values: List[float], clo
         TypeError: closing_values must be list
         TypeError: high_values must be list
         TypeError: low_values must be list
+        TypeError: K_lookback must be int
+        TypeError: D_lookback must be int
     Returns:
         Tuple(float, float): K score & D score
     Example:
@@ -235,6 +237,10 @@ def stochastic_oscillator(high_values: List[float], low_values: List[float], clo
         raise TypeError("The low_values is expected to be a list")
     if (len(high_values) != len(low_values)) or (len(high_values) != len(closing_values)):
         raise InvalidInputError("The length of values are mismatching")
+    if type(K_lookback) != int:
+        raise TypeError("The K_lookback is expected to be a int")
+    if type(D_lookback) != int:
+        raise TypeError("The D_lookback is expected to be a int")
 
     D_list = []
     for start, close in enumerate(closing_values[K_lookback:]):
@@ -242,30 +248,34 @@ def stochastic_oscillator(high_values: List[float], low_values: List[float], clo
         lowest = max(low_values[start:start + K_lookback])
         K_score = 100.0 * (close - lowest) / (highest - lowest)
         D_list.append(K_score)
-    D_score = 100.0 * max(D_list[-D_lookback:]) / max(D_list[-D_lookback:])
+    D_score = 100.0 * max(D_list[-D_lookback:]) / min(D_list[-D_lookback:])
     return K_score, D_score
 
 
-def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), signal_lookback: int = 9):
+def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), MACD_smoothing: Tuple[float, float] = (2.0, 2.0),
+         signal_lookback: int = 9, signal_smoothing: float = 2.0):
     """Calculates Moving Average Convergence Divergence for a stock
 
     MACD uses different SMAs to identify support and resistance levels. The MACD not only determines whether a trend is up
     or down, but it the strength of buy and sell signals
 
     Args:
-        values (List[float]): ---
-        MACD_lookback (Tuple[int, int], optional): ---
-        signal_lookback (int, optional): ----
+        values (List[float]): list of closing stock prices
+        MACD_lookback (Tuple[int, int], optional): the lookback values used for creating MACD line
+        signal_lookback (int, optional): the lookback value used for signal line
     Raises:
         TypeError: The signal lookback is expected to be integer
         TypeError: The MACD_lookback is expected to be a tuple
         TypeError: The signal lookback is expected to be integer
 
     Returns:
-        Tuple[List(float), List(float), List(float)]: The lists represent the MACD values, the signal values and the
-        histogram used by MACD
+        Tuple[List(float), List(float)]: The lists represent the MACD values and the signal values
 
-    Example: ---
+    Example:
+        >>> from caishen_dashboard.data_processing.technical_indicators import MACD
+        >>> MACD(values = [10.40, 10.50, 10.10, 10.48, 10.51, 10.80, 10.80, 10.71, 10.79, 11.21, 11.42, 11.84]
+        ...      MACD_lookback = (3, 6), signal_lookback = 3)
+        ([0.1642, 0.1539, 0.1089, 0.0944, 0.1658, 0.2126,0.2889], [0.1423, 0.1184, 0.1421, 0.1773, 0.2331])
     """
     # Error Checking
     if type(values) != list:
@@ -275,39 +285,37 @@ def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), signal_
     if type(signal_lookback) != int:
         raise TypeError("The signal lookback is expected to be integer but it is " + str(signal_lookback))
 
-    MACD_values = EMA(values, MACD_lookback[0]) - EMA(values, MACD_lookback[1])
-    signal_values = EMA(MACD_values, signal_lookback)
-    histogram_values = MACD_values - signal_values
+    MACD_values = EMA(values, MACD_lookback[0], MACD_smoothing[0]) - EMA(values, MACD_lookback[1], MACD_smoothing[1])
+    signal_values = EMA(MACD_values, signal_lookback, signal_smoothing)
 
-    return MACD_values, signal_values, histogram_values
+    return MACD_values, signal_values
 
 
-def RSI(values: List[float], lookback: int = 14):
+def RSI(values: List[float]):
     """Calculates Relative Strength Index for a stock
 
-    MACD uses different SMAs to identify support and resistance levels. The MACD not only determines whether a trend is up
-    or down, but it the strength of buy and sell signals
+    The length of the provided list provides an implicit lookback period.
 
     Args:
-        values (List[float]): ---
-        lookback (int, optional): ----
+        values (List[float]): list of closing stock prices
     Raises:
         TypeError: The values is expected to be a list
-        TypeError: The lookback is expected to be integer
 
     Returns:
         float: The RSI score of a stock
 
-    Example: ---
+    Example:
+        >>> from caishen_dashboard.data_processing.technical_indicators import RSI
+        >>> RSI([1.0, 1.2, 1.4, 1.1, 0.9])
+        44.4445
     """
     # Error Checking
     if type(values) != list:
         raise TypeError("The values is expected to be a list but it is " + str(values))
-    if type(lookback) != int:
-        raise TypeError("The lookback is expected to be integer but it is " + str(lookback))
 
     gain: List[float] = [0.0]
     loss: List[float] = [0.0]
+    lookback = len(values)
     previous = values[0]
     for current in values[1:]:
         change = current - previous
@@ -320,7 +328,7 @@ def RSI(values: List[float], lookback: int = 14):
 
     average_gain = SMA(gain, lookback)
     average_loss = SMA(loss, lookback)
-    RS = average_gain/average_loss
-    RSI = 100 - 100/(1+RS)
+    RS = average_gain / average_loss
+    RSI = 100 - 100 / (1 + RS)
 
-    return RSI
+    return round(RSI, 4)

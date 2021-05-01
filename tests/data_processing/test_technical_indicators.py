@@ -165,3 +165,24 @@ def test_fibonacci_retractments_falling_price():
     expected_result = [12.36, 17.64]
     output = TI.fibonacci_retractments(start_price, end_price, fibonacci_levels)
     assert output == expected_result
+
+
+def test_stochastic_oscillator_success():
+    high_values = [100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0]
+    low_values = [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0]
+    closing_values = [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0]
+    K_lookback = 5
+    D_lookback = 3
+    print(TI.SO(high_values, low_values, closing_values, K_lookback, D_lookback))
+    raise False
+
+
+def test_stochastic_oscillator_fail_high_values():
+    high_values = "fail"
+    low_values = [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0]
+    closing_values = [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0]
+    K_lookback = 5
+    D_lookback = 3
+    with pytest.raises(Exception) as ex:
+        TI.SO(high_values, low_values, closing_values, K_lookback, D_lookback)
+    assert "is expected to be a list" in str(ex.value)
