@@ -223,9 +223,9 @@ def SO(high_values: List[float], low_values: List[float], closing_values: List[f
         Tuple(float, float): K score & D score
     Example:
         >>> from caishen_dashboard.data_processing.technical_indicators import stochastic_oscillator
-        >>> stochastic_oscillator([100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0],
-        ...                       [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0],
-        ...                       [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0])
+        >>> stochastic_oscillator([100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0, 97.0],
+        ...                       [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0, 94.0],
+        ...                       [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0, 96.0])
         (0, 26.9841)
     """
     # Error Checking
@@ -245,10 +245,10 @@ def SO(high_values: List[float], low_values: List[float], closing_values: List[f
     D_list = []
     for start, close in enumerate(closing_values[K_lookback:]):
         highest = max(high_values[start:start + K_lookback])
-        lowest = max(low_values[start:start + K_lookback])
+        lowest = min(low_values[start:start + K_lookback])
         K_score = 100.0 * (close - lowest) / (highest - lowest)
         D_list.append(K_score)
-    D_score = 100.0 * max(D_list[-D_lookback:]) / min(D_list[-D_lookback:])
+    D_score = SMA(D_list[-D_lookback:], D_lookback)[-1]
     return K_score, D_score
 
 
