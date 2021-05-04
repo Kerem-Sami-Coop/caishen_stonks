@@ -128,8 +128,7 @@ def bollinger_bands(values: List[float], lookback: int = 20) -> Tuple[List[float
     Example:
         >>> from caishen_dashboard.data_processing.technical_indicators import bollinger_bands
         >>> bollinger_bands([1, 2, 3, 4, 5], 2)
-        [[-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5]]
-
+        ([-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5])
     """
     # Error Checking
     if len(values) == 0:
@@ -222,11 +221,11 @@ def SO(high_values: List[float], low_values: List[float], closing_values: List[f
     Returns:
         Tuple(float, float): K score & D score
     Example:
-        >>> from caishen_dashboard.data_processing.technical_indicators import stochastic_oscillator
-        >>> stochastic_oscillator([100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0, 97.0],
-        ...                       [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0, 94.0],
-        ...                       [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0, 96.0])
-        (12.5, 26.38888888888889)
+        >>> from caishen_dashboard.data_processing.technical_indicators import SO
+        >>> SO([100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0, 97.0],
+        ...    [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0, 94.0],
+        ...    [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0, 96.0])
+        ([14.285714285714286, 66.66666666666667, 0.0, 12.5], [-1, -1, 26.984126984126988, 26.38888888888889])
     """
     # Error Checking
     if type(closing_values) != list:
@@ -275,7 +274,9 @@ def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), MACD_sm
         >>> from caishen_dashboard.data_processing.technical_indicators import MACD
         >>> MACD(values=[10.40, 10.50, 10.10, 10.48, 10.51, 10.80, 10.80, 10.71, 10.79, 11.21, 11.42, 11.84],
         ...      MACD_lookback=(3, 6), signal_lookback=3)
-        ([0.1642, 0.1539, 0.1089, 0.0944, 0.1658, 0.2126,0.2889], [0.1423, 0.1184, 0.1421, 0.1773, 0.2331])
+        ([-1, -1, -1, -1, -1, 0.1641666666666648, 0.15386904761904674, 0.1089243197278904, 0.09445487123420726, \
+0.1657936580244339, 0.21258698787459807, 0.2889293216961413], [-1, -1, -1, -1, -1, -1, -1, \
+0.1423200113378673, 0.11838744128603729, 0.1420905496552356, 0.17733876876491683, 0.23313404523052905])
     """
     # Error Checking
     if type(values) != list:
@@ -309,7 +310,7 @@ def RSI(values: List[float], lookback: int = 14) -> List[float]:
     Example:
         >>> from caishen_dashboard.data_processing.technical_indicators import RSI
         >>> RSI([1.0, 1.2, 1.4, 1.1, 0.9], 3)
-        44.4445
+        [-1, -1, 0.0, 57.14285714285715, 28.57142857142857]
     """
     # Error Checking
     if type(values) != list:
