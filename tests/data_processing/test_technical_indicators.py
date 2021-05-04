@@ -173,8 +173,8 @@ def test_stochastic_oscillator_success():
     closing_values = [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0, 96.0]
     K_lookback = 5
     D_lookback = 3
-    print(TI.SO(high_values, low_values, closing_values, K_lookback, D_lookback))
-    raise False
+    output = TI.SO(high_values, low_values, closing_values, K_lookback, D_lookback)
+    assert round(output[0], 4) == 12.5 and round(output[1], 4) == 26.3889
 
 
 def test_stochastic_oscillator_fail_high_values():

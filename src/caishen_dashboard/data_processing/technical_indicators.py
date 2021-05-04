@@ -243,7 +243,7 @@ def SO(high_values: List[float], low_values: List[float], closing_values: List[f
         raise TypeError("The D_lookback is expected to be a int")
 
     D_list = []
-    for start, close in enumerate(closing_values[K_lookback:]):
+    for start, close in enumerate(closing_values[K_lookback - 1:]):
         highest = max(high_values[start:start + K_lookback])
         lowest = min(low_values[start:start + K_lookback])
         K_score = 100.0 * (close - lowest) / (highest - lowest)
