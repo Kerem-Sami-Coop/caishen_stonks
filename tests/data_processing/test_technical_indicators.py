@@ -124,7 +124,7 @@ def test_bollinger_bands_negative_lookback():
 def test_bollinger_bands_calculations():
     values = [1, 2, 3, 4, 5]
     lookback = 2
-    expected_result = [[-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5]]
+    expected_result = ([-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5])
     output = TI.bollinger_bands(values, lookback)
     assert output == expected_result
 
@@ -165,3 +165,38 @@ def test_fibonacci_retractments_falling_price():
     expected_result = [12.36, 17.64]
     output = TI.fibonacci_retractments(start_price, end_price, fibonacci_levels)
     assert output == expected_result
+
+
+def test_stochastic_oscillator_success():
+    high_values = [100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0, 97.0]
+    low_values = [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0, 94.0]
+    closing_values = [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0, 96.0]
+    K_lookback = 5
+    D_lookback = 3
+    output = TI.SO(high_values, low_values, closing_values, K_lookback, D_lookback)
+    assert [round(x, 4) for x in output[0]] == [14.2857, 66.6667, 0.0, 12.5]
+    assert [round(x, 4) for x in output[1]] == [-1, -1, 26.9841, 26.3889]
+
+
+def test_stochastic_oscillator_fail_high_values():
+    high_values = "fail"
+    low_values = [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0]
+    closing_values = [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0]
+    K_lookback = 5
+    D_lookback = 3
+    with pytest.raises(Exception) as ex:
+        TI.SO(high_values, low_values, closing_values, K_lookback, D_lookback)
+    assert "is expected to be a list" in str(ex.value)
+
+
+def test_MACD_success():
+    values = [10.40, 10.50, 10.10, 10.48, 10.51, 10.80, 10.80, 10.71, 10.79, 11.21, 11.42, 11.84]
+    output = TI.MACD(values=values, MACD_lookback=(3, 6), signal_lookback=3)
+    assert [round(x, 4) for x in output[0]] == [-1, -1, -1, -1, -1, 0.1642, 0.1539, 0.1089, 0.0945, 0.1658, 0.2126, 0.2889]
+    assert [round(x, 4) for x in output[1]] == [-1, -1, -1, -1, -1, -1, -1, 0.1423, 0.1184, 0.1421, 0.1773, 0.2331]
+
+
+def test_RSI_success():
+    values = [1.0, 1.2, 1.4, 1.1, 0.9]
+    output = TI.RSI(values=values, lookback=3)
+    assert [-1, -1, 0.0, 57.1429, 28.5714] == [round(x, 4) for x in output]

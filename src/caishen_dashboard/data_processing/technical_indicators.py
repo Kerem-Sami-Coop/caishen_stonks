@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Tuple
 from .errors import InvalidInputError
 import statistics
 
 
-def SMA(values: List[float], lookback: int = 14):
+def SMA(values: List[float], lookback: int = 14) -> List[float]:
     """Calculates Simple Moving Average (SMA) for a given lookback.
 
     The lookback determines the rolling window for which the averages are taken over. For example,
@@ -48,7 +48,7 @@ def SMA(values: List[float], lookback: int = 14):
     return result
 
 
-def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
+def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0) -> List[float]:
     """Calculates Exponential Moving Average (EMA) for a given lookback.
 
     The lookback determines the rolling window for which the averages are taken over. For example,
@@ -108,7 +108,7 @@ def EMA(values: List[float], lookback: int = 12, smoothing: float = 2.0):
     return result
 
 
-def bollinger_bands(values: List[float], lookback: int = 20):
+def bollinger_bands(values: List[float], lookback: int = 20) -> Tuple[List[float], List[float], List[float]]:
     """Calculates upper (avg + 2 * stdev), middle (avg) and lower (avg - 2 * stdev) bollinger bands
 
     Args:
@@ -128,8 +128,7 @@ def bollinger_bands(values: List[float], lookback: int = 20):
     Example:
         >>> from caishen_dashboard.data_processing.technical_indicators import bollinger_bands
         >>> bollinger_bands([1, 2, 3, 4, 5], 2)
-        [[-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5]]
-
+        ([-1, 0.5, 1.5, 2.5, 3.5], [-1, 1.5, 2.5, 3.5, 4.5], [-1, 2.5, 3.5, 4.5, 5.5])
     """
     # Error Checking
     if len(values) == 0:
@@ -156,12 +155,11 @@ def bollinger_bands(values: List[float], lookback: int = 20):
         upper_band.append(average + 2 * stdev)
         lower_band.append(average - 2 * stdev)
 
-    return [lower_band, middle_band, upper_band]
+    return lower_band, middle_band, upper_band
 
 
-def fibonacci_retractments(
-        start_price: float, end_price: float,
-        fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]):
+def fibonacci_retractments(start_price: float, end_price: float,
+                           fibonacci_levels: List[float] = [0.236, 0.382, 0.5, 0.618, 0.764]) -> List[float]:
     """Calculates Fibonacci retractment levels for the given start price, end price and fibonacci levels
 
     Args:
@@ -201,3 +199,146 @@ def fibonacci_retractments(
         result.append(end_price + multiplier * price_difference * level)
 
     return result
+
+
+def SO(high_values: List[float], low_values: List[float], closing_values: List[float], K_lookback: int = 5,
+       D_lookback: int = 3) -> Tuple[List[float], List[float]]:
+    """Calculates stochastic oscillator for the provided stock.
+
+    Args:
+        high_values (List[float]): A list of the highest stock value for each day in the last N days.
+        low_values (List[float]): A list of the lowest stock value for each day in the last N days.
+        closing_values (float): The closing prices for the last N days.
+        K_lookback (int, optional): lookback days for the last 5 days.
+        D_lookback (int, optional): lookback days for the last 3 days.
+    Raises:
+        InvalidInputError: The length of the lists are not matching
+        TypeError: closing_values must be list
+        TypeError: high_values must be list
+        TypeError: low_values must be list
+        TypeError: K_lookback must be int
+        TypeError: D_lookback must be int
+    Returns:
+        Tuple(float, float): K score & D score
+    Example:
+        >>> from caishen_dashboard.data_processing.technical_indicators import SO
+        >>> SO([100.0, 101.0, 104.0, 105.0, 100.0, 110.0, 108.0, 97.0],
+        ...    [99.0, 100.0, 99.0, 102.0, 98.0, 105.0, 95.0, 94.0],
+        ...    [100.50, 100.50, 103.0, 104.0, 99.0, 106.0, 95.0, 96.0])
+        ([14.285714285714286, 66.66666666666667, 0.0, 12.5], [-1, -1, 26.984126984126988, 26.38888888888889])
+    """
+    # Error Checking
+    if type(closing_values) != list:
+        raise TypeError("The closing_values is expected to be a list")
+    if type(high_values) != list:
+        raise TypeError("The high_values is expected to be a list")
+    if type(low_values) != list:
+        raise TypeError("The low_values is expected to be a list")
+    if (len(high_values) != len(low_values)) or (len(high_values) != len(closing_values)):
+        raise InvalidInputError("The length of values are mismatching")
+    if type(K_lookback) != int:
+        raise TypeError("The K_lookback is expected to be a int")
+    if type(D_lookback) != int:
+        raise TypeError("The D_lookback is expected to be a int")
+
+    K_list = []
+    for start, close in enumerate(closing_values[K_lookback - 1:]):
+        highest = max(high_values[start:start + K_lookback])
+        lowest = min(low_values[start:start + K_lookback])
+        K_score = 100.0 * (close - lowest) / (highest - lowest)
+        K_list.append(K_score)
+    D_list = SMA(K_list, D_lookback)
+    return K_list, D_list
+
+
+def MACD(values: List[float], MACD_lookback: Tuple[int, int] = (12, 26), MACD_smoothing: Tuple[float, float] = (2.0, 2.0),
+         signal_lookback: int = 9, signal_smoothing: float = 2.0) -> Tuple[List[float], List[float]]:
+    """Calculates Moving Average Convergence Divergence for a stock
+
+    MACD uses different SMAs to identify support and resistance levels. The MACD not only determines whether a trend is up
+    or down, but it the strength of buy and sell signals
+
+    Args:
+        values (List[float]): list of closing stock prices
+        MACD_lookback (Tuple[int, int], optional): the lookback values used for creating MACD line
+        signal_lookback (int, optional): the lookback value used for signal line
+    Raises:
+        TypeError: The signal lookback is expected to be integer
+        TypeError: The MACD_lookback is expected to be a tuple
+        TypeError: The signal lookback is expected to be integer
+
+    Returns:
+        Tuple[List(float), List(float)]: The lists represent the MACD values and the signal values
+
+    Example:
+        >>> from caishen_dashboard.data_processing.technical_indicators import MACD
+        >>> MACD(values=[10.40, 10.50, 10.10, 10.48, 10.51, 10.80, 10.80, 10.71, 10.79, 11.21, 11.42, 11.84],
+        ...      MACD_lookback=(3, 6), signal_lookback=3)
+        ([-1, -1, -1, -1, -1, 0.1641666666666648, 0.15386904761904674, 0.1089243197278904, 0.09445487123420726, \
+0.1657936580244339, 0.21258698787459807, 0.2889293216961413], [-1, -1, -1, -1, -1, -1, -1, \
+0.1423200113378673, 0.11838744128603729, 0.1420905496552356, 0.17733876876491683, 0.23313404523052905])
+    """
+    # Error Checking
+    if type(values) != list:
+        raise TypeError("The values is expected to be a list but it is " + str(values))
+    if type(MACD_lookback) != tuple:
+        raise TypeError("The MACD_lookback is expected to be a tuple but it is " + str(MACD_lookback))
+    if type(signal_lookback) != int:
+        raise TypeError("The signal lookback is expected to be integer but it is " + str(signal_lookback))
+
+    short_term = EMA(values, MACD_lookback[0], MACD_smoothing[0])
+    long_term = EMA(values, MACD_lookback[1], MACD_smoothing[1])
+    MACD_values = [x - y if y != -1 else -1 for x, y in zip(short_term, long_term)]
+    signal_values = [-1] * (MACD_lookback[1] - 1)
+    signal_values = signal_values + EMA(MACD_values[MACD_lookback[1] - 1:], signal_lookback, signal_smoothing)
+    return MACD_values, signal_values
+
+
+def RSI(values: List[float], lookback: int = 14) -> List[float]:
+    """Calculates Relative Strength Index for a stock
+
+    The length of the provided list provides an implicit lookback period.
+
+    Args:
+        values (List[float]): list of closing stock prices
+    Raises:
+        TypeError: The values is expected to be a list
+
+    Returns:
+        List[float]: The RSI scores of a stock
+
+    Example:
+        >>> from caishen_dashboard.data_processing.technical_indicators import RSI
+        >>> RSI([1.0, 1.2, 1.4, 1.1, 0.9], 3)
+        [-1, -1, 0.0, 57.14285714285715, 28.57142857142857]
+    """
+    # Error Checking
+    if type(values) != list:
+        raise TypeError("The values is expected to be a list but it is " + str(values))
+
+    gain = [0.0]
+    loss = [0.0]
+
+    previous = values[0]
+    for current in values[1:]:
+        change = current - previous
+        if change >= 0:
+            gain.append(change)
+            loss.append(0.0)
+        else:
+            gain.append(0.0)
+            loss.append(abs(change))
+        previous = current
+
+    average_gain = SMA(gain, lookback)
+    average_loss = SMA(loss, lookback)
+    output = []
+    for x, y in zip(average_gain, average_loss):
+        if y == -1:
+            output.append(-1)
+        elif y == 0:
+            output.append(0.0)
+        else:
+            output.append(100 - 100 / (1 + x / y))
+
+    return output
