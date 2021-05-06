@@ -75,3 +75,12 @@ def test_false_interval_request():
     with pytest.raises(Exception) as ex:
         StockHistoryRequestBuilder(tickers=["AAPL"], date_range=DateRange.oneYear, interval="5mo")
     assert "Invalid interval type" in str(ex.value)
+
+
+def test_missing_env_var():
+    temp = os.environ["RAPID_API_TOKEN"]
+    del os.environ["RAPID_API_TOKEN"]
+    with pytest.raises(Exception) as ex:
+        StockHistoryRequestBuilder(tickers=["AAPL"], date_range=DateRange.oneYear, interval=StockInterval.oneMonth)
+    os.environ["RAPID_API_TOKEN"] = temp
+    assert "Missing RAPID_API_TOKEN" in str(ex.value)

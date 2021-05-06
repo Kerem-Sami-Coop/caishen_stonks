@@ -8,7 +8,6 @@ import yaml
 # python Path to include the app and tests modules
 service_root = Path(__file__).parents[1]
 sys.path.insert(0, f"{service_root}")
-sys.path.insert(0, f"{service_root}/src")
 sys.path.insert(0, f"{service_root}/tests")
 
 with open("dev_env_var.yaml", "r") as f:

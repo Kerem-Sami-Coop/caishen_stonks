@@ -41,14 +41,13 @@ class StockHistoryRequestBuilder:
         if not isinstance(interval, StockInterval):
             raise TypeError("Invalid interval type. Please use StockInterval class")
 
-    def _build_conf(self, tickers, date_range, interval):
-        REQUIRED_VARS = ["RAPIDAPI_HOST", "RAPIDAPI_ENDPOINT"]
+        REQUIRED_ENV_VARS = ["RAPIDAPI_HOST", "RAPIDAPI_ENDPOINT", "RAPID_API_TOKEN"]
         ENV_VARS = os.environ.keys()
-
-        for var in REQUIRED_VARS:
+        for var in REQUIRED_ENV_VARS:
             if var not in ENV_VARS:
                 raise MissingEnvVarError(f"Missing {var} from enviroment variables")
 
+    def _build_conf(self, tickers, date_range, interval):
         conf = {}
         host = os.environ["RAPIDAPI_HOST"]
         endpoint = os.environ["RAPIDAPI_ENDPOINT"]
