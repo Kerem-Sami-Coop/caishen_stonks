@@ -6,7 +6,7 @@ source = caishen_dashboard
 
 [paths]
 source =
-    src/
+    .
     */site-packages/
 
 [report]
