@@ -8,7 +8,9 @@ class DateRange(Enum):
     sixMonth = "3mo"
     oneYear = "1y"
     fiveYear = "5y"
-    maximum = "max"
+    # maximum can cause errors so it is removed temporarily
+    # see https://www.notion.so/Yahoo-Finance-Low-Latency-Rapid-API-61a3f7aa451d4558bc3d89f38dd39494
+    # maximum = "max"
 
 
 class StockInterval(Enum):
