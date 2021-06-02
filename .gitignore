@@ -8,7 +8,7 @@
 *.orig
 *.log
 *.pot
-__pycache__/*
+__pycache__/
 .cache/*
 .*.swp
 */.ipynb_checkpoints/*
@@ -39,15 +39,18 @@ coverage.xml
 .pytest_cache/
 
 # Build and docs folder/files
+_build/*
 build/*
 dist/*
 sdist/*
-docs/api/*
-docs/_rst/*
-docs/_build/*
+docs/*
 cover/*
 MANIFEST
 
 # Per-project virtualenvs
 .venv*/
 .conda*/
+
+# Secrets
+secrets.yaml
+secrets.yml
